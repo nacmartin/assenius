@@ -29,7 +29,7 @@ run = (args=process.argv) ->
     .usage("[options] <css file>")
     .option("-s, --sprites [file]", "convert PNGs into sprites", defaults.sprites)
     .option("-b, --base_dir [path]", "base path to which css images are relative to", defaults.base)
-    .option("-os, --output_sprites [file]", "output css file with sprites", defaults.output)
+    .option("-o, --output [file]", "output css file with sprites", defaults.output)
     .option("-p, --optimize", "optimize PNGs", defaults.crush)
     .parse(args)
     .name = "assenius"
@@ -53,12 +53,11 @@ optimize = (source) ->
         code = buffer.toString()
         lines = code.split '\n'
         async.mapSeries lines, parseLine, (err, results) ->
-            console.log results
             lines = (result.line for result in results).join "\n"
             paths = (result.path for result in results).filter (path) ->
                 path != null
-            args = paths.concat(['-append', config.sprites])
-            console.log(lines)
+            args = paths.reverse().concat(['-append', config.sprites])
+            fs.writeFile config.output, lines
             im.convert args, (err, stdout, stderr) ->
                 console.log(stdout)
 
@@ -78,7 +77,7 @@ optimizeBg = (path, callback) ->
        images.push imagePath
        getHeight imagePath, (height) ->
             offset = offset + height
-            callback "\tbackground-image: url('#{config.sprites}')\n\t background-position: 0 -#{ offset }px", imagePath
+            callback "\tbackground-image: url('#{config.sprites}');\n\tbackground-position: 0 #{ offset }px;", imagePath
 
 getHeight = (imgPath, callback) ->
     im.identify imgPath, (err, features) ->
