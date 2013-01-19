@@ -57,8 +57,10 @@ optimize = (source) ->
             lines = (result.line for result in results).join "\n"
             paths = (result.path for result in results).filter (path) ->
                 path != null
+            args = paths.concat(['-append', config.sprites])
             console.log(lines)
-            console.log(paths)
+            im.convert args, (err, stdout, stderr) ->
+                console.log(stdout)
 
 parseLine = (line, callback) ->
     bgMatcher = /background-image:\s+url\(['"]?(.*png)['"]?\)/g
