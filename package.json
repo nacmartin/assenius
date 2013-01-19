@@ -1,0 +1,30 @@
+{
+    "name":         "assenius",
+    "description":  "compress pngs and generate css sprites",
+    "keywords":     ["assets", "png", "css", "sprites"],
+    "author":       "Nacho Martín <nacho@limenius.com>",
+    "version":      "0.0.1",
+    "licenses":     [{
+        "type":     "MIT",
+        "url":      "http://opensource.org/licenses/mit-license.php"
+    }],
+    "scripts": {
+        "test": "cake test"
+    },
+    "directories": {
+        "lib" :       "./lib"
+    },
+    "dependencies": {
+        "commander": ">=0.5.2",
+        "imagemagick": ">=0.1.3",
+        "async": ">=0.1.22"
+    },
+    "devDependencies": {
+        "coffee-script": ">=1.3.3",
+        "rimraf"       :">=2.0.2"
+    },
+    "main":     "./lib/assenius",
+    "bin":      {
+        "assenius":    "./bin/assenius"
+    }
+}
