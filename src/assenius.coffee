@@ -13,7 +13,7 @@ version = JSON.parse(fs.readFileSync("#{__dirname}/../package.json")).version
 defaults =
   sprites : 'sprites.png'
   output  : 'osprites.css'
-  crush  : false
+  basesprites  : 'sprites.png'
   base_dir  : process.cwd()
 
 config = {}
@@ -27,10 +27,11 @@ config = {}
 run = (args=process.argv) ->
   commander.version(version)
     .usage("[options] <css file>")
-    .option("-s, --sprites [file]", "convert PNGs into sprites", defaults.sprites)
     .option("-b, --base_dir [path]", "base path to which css images are relative to", defaults.base)
+    .option("-s, --sprites [file]", "file that will contain the sprites", defaults.sprites)
+    .option("-c, --basesprites [path]", "path to sprites file in css", defaults.basesprites)
+    .option("-x, --exclude [files]", "files to avoid in sprites", "")
     .option("-o, --output [file]", "output css file with sprites", defaults.output)
-    .option("-p, --optimize", "optimize PNGs", defaults.crush)
     .parse(args)
     .name = "assenius"
   if commander.args.length
@@ -57,6 +58,7 @@ optimize = (source) ->
             paths = (result.path for result in results).filter (path) ->
                 path != null
             args = paths.reverse().concat(['-append', config.sprites])
+            console.log("output in "+config.sprites)
             fs.writeFile config.output, lines
             im.convert args, (err, stdout, stderr) ->
                 console.log(stdout)
@@ -72,12 +74,16 @@ parseLine = (line, callback) ->
         callback null, (line: line, path: null)
 
 optimizeBg = (path, callback) ->
+    console.log(config.exclude.split(' '))
+    console.log path
+    if config.exclude.split(' ').indexOf(path) != -1
+        return callback "\tbackground-image: url('#{path}');\n", null
     if path.indexOf('/') == 0
        imagePath = config.base_dir + path
        images.push imagePath
        getHeight imagePath, (height) ->
             offset = offset + height
-            callback "\tbackground-image: url('#{config.sprites}');\n\tbackground-position: 0 #{ offset }px;", imagePath
+            callback "\tbackground-image: url('#{config.basesprites}');\n\tbackground-position: 0 #{ offset }px;", imagePath
 
 getHeight = (imgPath, callback) ->
     im.identify imgPath, (err, features) ->
