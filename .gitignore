@@ -1,3 +1,4 @@
 tests/out/*
 lib/*
 sprites.png
+node_modules/*
